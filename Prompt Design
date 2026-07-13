@@ -1,0 +1,79 @@
+As follows, we show the details of our designed prompt in this work.
+
+### **Task-Aware GUI Relevance Prompt**
+
+**Role Specification.**  
+This prompt defines the role of the LLM to align its reasoning behavior with expert-level GUI accessibility analysis, thereby reducing ambiguity in interpretation.
+
+> **Role:**  
+> You are an expert in mobile GUI accessibility analysis.
+
+**Task Description.**  
+The task description explicitly specifies the user goal, which serves as the semantic anchor for relevance reasoning.
+
+> **Task:**  
+> The user wants to: *Start navigation to a destination*.
+
+**Scoring Criteria.**  
+We define a discrete relevance scale to standardize the LLM's output space and ensure consistent interpretation across different GUI contexts.
+
+> * **2** = Core functionality (essential for completing the task)
+> * **1** = Auxiliary functionality (helpful but not necessary)
+> * **0** = Irrelevant (unrelated to the task)
+
+**Few-shot Examples.**  
+These examples provide concrete demonstrations of task-oriented reasoning, helping the LLM learn how to distinguish between core, auxiliary, and irrelevant components.
+
+> **Example Task:** Start navigation to a destination
+> 
+> **Component A:**  
+> Text: "Search"  
+> Type: Input Field  
+> $\rightarrow$ Score: 2  
+> Reason: Required to enter destination
+> 
+> **Component B:**  
+> Text: "Nearby Restaurants"  
+> Type: List  
+> $\rightarrow$ Score: 1  
+> Reason: Helpful but not required
+> 
+> **Component C:**  
+> Text: "Advertisement"  
+> Type: Image Banner  
+> $\rightarrow$ Score: 0  
+> Reason: Not related to navigation
+
+**UI Component Input.**  
+Each GUI component is represented using structured multi-modal attributes (text, type, position, hierarchy), enabling the LLM to reason over both semantic and structural information.
+
+> **Component ID: 1**  
+> Text: "Search"  
+> Type: Input Field  
+> Position: Top  
+> Hierarchy: Root > SearchBar
+> 
+> **Component ID: 2**  
+> Text: "Start Navigation"  
+> Type: Button  
+> Position: Center  
+> Hierarchy: Root > MapPanel > ControlBar
+> 
+> **Component ID: 3**  
+> Text: "Discount Offers"  
+> Type: Banner  
+> Position: Bottom  
+> Hierarchy: Root > AdPanel
+
+**Reasoning Instruction.**  
+We explicitly encourage step-by-step reasoning to improve decision quality and reduce superficial judgments.
+
+> For each component, determine its relevance to the task.  
+> Think step-by-step about whether the component is necessary.
+
+**Output Format.**  
+A structured output format is enforced to facilitate downstream parsing and integration into the pruning module.
+
+> Component ID: 1, Score: 2, Reason: ...  
+> Component ID: 2, Score: 2, Reason: ...  
+> Component ID: 3, Score: 0, Reason: ...
